@@ -1,7 +1,7 @@
-import HomeNavbar from './Components/Navbar.jsx';
+import HomeNavbar from './components/Navbar.jsx';
 import { Route, Routes } from 'react-router-dom';
-import Home from './Components/Home.jsx';
-import About from './Components/About.jsx';
+import Home from './components/Home.jsx';
+import About from './components/About.jsx';
 import './App.css';
 
 function App() {
