@@ -44,3 +44,15 @@ button {
 button:hover {
   background-color: #0056b3;
 }
+
+.image-previews {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.image-preview {
+  width: 100px;
+  height: auto;
+  object-fit: cover;
+}
