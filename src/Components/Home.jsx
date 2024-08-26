@@ -26,7 +26,19 @@ function Home() {
       );
       setPosts(postsWithImages);
     } catch (err) {
-      console.log("something wrong");
+      if (err.response) {
+        // Server responded with a status code that falls out of the range of 2xx
+        console.error("Server responded with an error:", err.response.status);
+        console.error("Status text:", err.response.statusText);
+        console.error("Response data:", err.response.data);
+      } else if (err.request) {
+        // Request was made but no response was received
+        console.error("No response received from server:", err.request);
+      } else {
+        // Something happened in setting up the request that triggered an error
+        console.error("Error in setting up the request:", err.message);
+      }
+      console.error("Full error object:", err);
     }
   };
 
@@ -35,11 +47,7 @@ function Home() {
       <main className="main">
         <div className="posts_container">
           {posts.map((post, index) => (
-            <Link
-              to={`/post/${post.Title.replace(/\s+/g, "-").toLowerCase()}`}
-              className="post"
-              key={index}
-            >
+            <Link to={`/post/${post.Id}`} className="post" key={index}>
               {post.Images &&
                 post.Images.map((image, idx) => (
                   <img

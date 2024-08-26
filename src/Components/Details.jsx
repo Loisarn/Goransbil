@@ -4,27 +4,29 @@ import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ShareIcon from "@mui/icons-material/Share";
 import Button from "@mui/material/Button";
 import Carousel from "./Carousel.jsx";
+import axios from "axios";
 import "./Details.css";
 
-const Details = ({ posts, isAdmin }) => {
-  const { slug } = useParams();
+const Details = ({ isAdmin }) => {
+  const { id } = useParams();
+  const [post, setPost] = useState(null);
   const navigate = useNavigate();
   const [countUp, setCountUp] = useState(0);
   const buttonRef = useRef(null);
 
   useEffect(() => {
-    console.log(`Slug from URL: ${slug}`); // Logga ut slug från URL:en
-  }, [slug]);
+    console.log(`Fetching post with ID: ${id}`);
+    const fetchPost = async () => {
+      try {
+        const response = await axios.get(`/posts/${id}`);
+        setPost(response.data);
+      } catch (error) {
+        console.error("Error fetching post:", error);
+      }
+    };
 
-  const post = posts.find(
-    (p) => p.Title.replace(/\s+/g, "-").toLowerCase() === slug
-  );
-
-  useEffect(() => {
-    if (buttonRef.current) {
-      buttonRef.current.focus();
-    }
-  }, []);
+    fetchPost();
+  }, [id]);
 
   if (!post) {
     return <div>Post not found</div>;
@@ -94,6 +96,9 @@ const Details = ({ posts, isAdmin }) => {
         </div>
         {/* <div className="views">{post.ViewCount}</div> */}
       </div>
+      <footer className="details_footer">
+        <p className="views"> Antal visningar: {post.ViewCount}</p>
+      </footer>
     </div>
   );
 };

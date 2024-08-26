@@ -4,12 +4,28 @@ const express = require('express');
 const mysql = require('mysql');
 const cors = require('cors');
 const path = require('path');
+const multer = require('multer');
+const uploads = multer({ dest: 'uploads/' });
+const fs = require('fs');
+
 const app = express();
-
-
 app.use(cors());
 
 app.use(express.json());
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        const uploadPath = path.join(__dirname, 'uploads');
+        if (!fs.existsSync(uploadPath)) {
+            fs.mkdirSync(uploadPath);
+        }
+        cb(null, 'uploads');
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + '-' + file.originalname);
+    }
+});
+const upload = multer({ storage });
 
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
@@ -25,10 +41,6 @@ db.connect((err) => {
         return;
     }
     console.log('Connected to the MySQL database.');
-});
-
-app.get('/', (req, res) => {
-    return res.json("from Backend");
 });
 
 // app.get("/posts", (req, res) => {
@@ -85,6 +97,77 @@ app.get("/images/:id", (req, res) => {
         res.json({ image: `data:image/jpeg;base64,${base64Image}` }); // Justera MIME-typen om nödvändigt
     });
 });
+
+app.get("/posts/:id", (req, res) => {
+    const Id = req.params.id;
+    console.log(`Fetching post with ID: ${Id}`);
+    
+    const query = `
+        SELECT Posts.*, Images.Data AS ImageData
+        FROM Posts
+        LEFT JOIN Images ON Posts.Id = Images.PostId
+        WHERE Posts.Id = ?
+    `;
+
+    db.query(query, [Id], (err, results) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).send("Database query failed");
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({ message: "Post not found" });
+        }
+
+        const post = results[0];
+        post.Images = results.map(row => row.ImageData ? `data:image/jpeg;base64,${Buffer.from(row.ImageData).toString('base64')}` : null).filter(Boolean);
+        // const post = results[0];
+        // post.Images = post.ImageFilenames ? post.ImageFilenames.split(',') : []; // Omvandla till array
+        // delete post.ImageFilenames; 
+
+        res.json(post); // Skicka tillbaka inlägget
+    });
+});
+
+app.post('/posts', upload.array('images', 5), (req, res) => {
+    const { title, description, price } = req.body;
+
+    if (!title || !description || !price) {
+        return res.status(400).json({ message: 'Title, description, and price are required.' });
+    }
+
+    // Extrahera filnamnen från de uppladdade filerna
+    const images = req.files.map(file => file.filename);
+
+    const query = `INSERT INTO Posts (title, description, price) VALUES (?, ?, ?)`;
+
+    db.query(query, [title, description, price], (err, results) => {
+        if (err) {
+            console.error('Error inserting data into the database:', err);
+            return res.status(500).json({ message: 'Internal server error' });
+        }
+
+        const postId = results.insertId;
+
+        // Om det finns bilder att lagra
+        if (images.length > 0) {
+            const imageQuery = `INSERT INTO Images (PostId, Data) VALUES ?`;
+            const imageValues = images.map(data => [postId, data]);
+
+            db.query(imageQuery, [imageValues], (err) => {
+                if (err) {
+                    console.error('Error inserting images into the database:', err);
+                    return res.status(500).json({ message: 'Internal server error' });
+                }
+
+                res.status(201).json({ id: postId, title, description, price, images });
+            });
+        } else {
+            res.status(201).json({ id: postId, title, description, price, images: [] });
+        }
+    });
+});
+
 
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, 'build')));

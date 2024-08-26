@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import "./NewPost.css";
 
 const NewPost = ({ addPost }) => {
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
-  const [text, setText] = useState("");
+  const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [images, setImages] = useState([]);
 
@@ -13,8 +14,8 @@ const NewPost = ({ addPost }) => {
     setTitle(e.target.value);
   };
 
-  const handleTextChange = (e) => {
-    setText(e.target.value);
+  const handleDescriptionChange = (e) => {
+    setDescription(e.target.value);
   };
 
   const handlePriceChange = (e) => {
@@ -23,37 +24,73 @@ const NewPost = ({ addPost }) => {
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
-    setImages(files.map((file) => URL.createObjectURL(file)));
+    setImages(files);
+    // setImages(files.map((file) => URL.createObjectURL(file)));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Skapa ett FormData-objekt och lägg till data
     const formData = new FormData();
     formData.append("title", title);
-    formData.append("text", text);
-    formData.append("date", new Date().toISOString());
+    formData.append("description", description);
+    formData.append("price", price);
 
-    images.forEach((image, index) => {
-      formData.append(`images[${index}]`, image);
+    // Lägg till bilder till formData, om några finns
+    images.forEach((image) => {
+      formData.append(`images`, image);
     });
 
     try {
-      const response = await fetch("/posts", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        console.log("Post created:", result);
-        navigate("/");
-      } else {
-        console.error("Failed to create post");
-      }
+      const response = await axios.post(
+        "http://localhost:8081/posts",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      console.log("Post created:", response.data);
+      navigate("/");
     } catch (error) {
-      console.error("Error:", error);
+      console.error(
+        "Error creating post:",
+        error.response ? error.response.data : error.message
+      );
     }
   };
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   const formData = new FormData();
+  //   formData.append("title", title);
+  //   formData.append("description", description);
+  //   formData.append("price", price);
+  //   formData.append("date", new Date().toISOString());
+
+  //   images.forEach((image) => {
+  //     formData.append("images", image);
+  //     // images.forEach((image, index) => {
+  //     //   formData.append(`images[${index}]`, image);
+  //   });
+
+  //   try {
+  //     const response = await axios.post("/posts", formData, {
+  //       headers: { "Content-Type": "multipart/form-data" },
+  //     });
+
+  //     if (response.status === 201) {
+  //       console.log("Post created:", response.data);
+  //       navigate("/");
+  //     } else {
+  //       console.error("Failed to create post");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error:", error);
+  //   }
+  // };
 
   // const handleSubmit = (e) => {
   //   e.preventDefault();
@@ -75,9 +112,9 @@ const NewPost = ({ addPost }) => {
 
         <label htmlFor="text">Beskrivning</label>
         <textarea
-          id="text"
-          value={text}
-          onChange={handleTextChange}
+          id="description"
+          value={description}
+          onChange={handleDescriptionChange}
           rows="4"
           cols="50"
         />

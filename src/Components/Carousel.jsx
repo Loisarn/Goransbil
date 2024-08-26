@@ -19,8 +19,8 @@ const Carousel = ({ data }) => {
       {data.map((item, idx) => {
         return (
           <img
-            src={item.src}
-            alt={item.alt}
+            src={item}
+            alt={`Post ${idx}`}
             key={idx}
             className={slide === idx ? "slide" : "slide slide-hidden"}
           />
