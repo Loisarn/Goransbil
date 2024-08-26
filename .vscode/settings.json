@@ -1,0 +1,8 @@
+{
+    "appService.zipIgnorePattern": [
+        "node_modules{,/**}",
+        ".vscode{,/**}"
+    ],
+    "appService.defaultWebAppToDeploy": "/subscriptions/3262f050-aceb-4c90-ad1a-887b212da3d4/resourceGroups/göransbilar_group/providers/Microsoft.Web/sites/göransbilar",
+    "appService.deploySubpath": "."
+}
