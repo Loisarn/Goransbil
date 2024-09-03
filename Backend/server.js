@@ -29,10 +29,10 @@ const upload = multer({ storage });
 
 const db = mysql.createConnection({
     host: 'mysql28.unoeuro.com',
-    port: process.env.DB_PORT,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME
+    port: '3306',
+    user: 'goransbilar_se',
+    password: 'drbE5nFwtp6AgxR9m32H',
+    database: 'goransbilar_se_db'
 });
 
 db.connect((err) => {
