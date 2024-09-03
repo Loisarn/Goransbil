@@ -28,7 +28,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 const db = mysql.createConnection({
-    host: process.env.DB_HOST,
+    host: 'mysql28.unoeuro.com',
     port: process.env.DB_PORT,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
