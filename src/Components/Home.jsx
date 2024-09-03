@@ -32,10 +32,8 @@ function Home() {
         console.error("Status text:", err.response.statusText);
         console.error("Response data:", err.response.data);
       } else if (err.request) {
-        // Request was made but no response was received
         console.error("No response received from server:", err.request);
       } else {
-        // Something happened in setting up the request that triggered an error
         console.error("Error in setting up the request:", err.message);
       }
       console.error("Full error object:", err);

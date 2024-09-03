@@ -12,11 +12,11 @@ const About = () => {
             upp ett starkt rykte genom att erbjuda högkvalitativa tjänster och
             enastående kundservice.
           </p>
-          <p>
+          {/* <p>
             Vår långa erfarenhet i branschen ger oss en unik förståelse för våra
             kunders behov, och vi strävar alltid efter att leverera lösningar
             som överträffar förväntningarna.
-          </p>
+          </p> */}
           <p>
             Som en auktoriserad verkstad är vi stolta över att kunna erbjuda ett
             komplett utbud av tjänster, från regelbundet underhåll och
@@ -26,14 +26,7 @@ const About = () => {
           <p>
             Men <strong>Görans Bil & Gräv</strong> är inte bara en verkstad – vi
             är också din lokala bilhandlare. Hos oss hittar du ett brett urval
-            av bilar till konkurrenskraftiga priser. Vi erbjuder både nya och
-            begagnade fordon, noggrant utvalda för att möta våra höga standarder
-            av kvalitet och tillförlitlighet.
-          </p>
-          <p>
-            Oavsett om du letar efter din nästa familjebil, ett ekonomiskt
-            pendlingsfordon, eller något mer speciellt, kan vi hjälpa dig att
-            hitta det perfekta fordonet för dina behov.
+            av bilar till konkurrenskraftiga priser.
           </p>
           <p>
             Vår engagerade personal står alltid redo att hjälpa till, oavsett om
